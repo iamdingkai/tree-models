@@ -167,7 +167,7 @@ class DecisionTree():
         return pred_probs
     
 
-    def train(self, X_train: np.array, Y_train: np.array) -> None:
+    def fit(self, X_train: np.array, Y_train: np.array) -> None:
         """
         Train the model with X and Y dataset
         """
@@ -232,23 +232,21 @@ if __name__ == '__main__':
     """
     toy dataset:
         x1: height in m
-        x2: weight in kg
-        y: diabetes or not
+        x2: vertical jump in m
+        y: volleyball middle position player or not
 
-        y = bmi (kg/m2) + N(0, 5) >= 32
+        if x1 < 1.9: y = 0
+        if x1 > 1.9:
+            if x2 < 3.5: y = 0
+            if x2 > 3.5: y = 1
     """
     N = 500
-    x1 = np.random.normal(loc=1.75, scale=0.2, size=N)
-    x2 = np.random.normal(loc=70, scale=20, size=N)
-    eps = np.random.normal(loc=0, scale=5, size=N)
-
-    bmi = x2 / (x1**2)
-    y_raw = bmi + eps # add noise to bmi
+    x1 = np.random.normal(loc=1.85, scale=0.2, size=N)
+    x2 = np.random.normal(loc=3.3, scale=0.2, size=N)
 
     X_train = np.column_stack((x1, x2))
-    Y_train = np.array([1 if y >= 32 else 0 for y in y_raw])
 
-    print(y_raw)
+    Y_train = (x1 > 1.9) & (x2 > 3.5)
     
     decision_tree = DecisionTree()
     decision_tree.train(X_train, Y_train)
