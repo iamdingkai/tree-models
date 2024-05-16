@@ -315,5 +315,13 @@ Intuitively, this process iteratively increases the weight of observations
  segments gradually over time.
 \end_layout
 
+\begin_layout Section
+Gradient Boost
+\end_layout
+
+\begin_layout Standard
+s
+\end_layout
+
 \end_body
 \end_document

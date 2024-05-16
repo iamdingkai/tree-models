@@ -311,8 +311,8 @@ Intuitively, this process iteratively increases the weight of observations
 \begin_inset Formula $i$
 \end_inset
 
- with wrong predictions.
- 
+ with wrong predictions, so that hopefully model takes better care of those
+ segments gradually over time.
 \end_layout
 
 \end_body
