@@ -151,30 +151,168 @@ Take the average of all bootstrap predictions
 AdaBoost
 \end_layout
 
-\begin_layout Itemize
-Bootstrap the original training sample 
-\begin_inset Formula $\{x_{i},y_{i}\}$
+\begin_layout Standard
+For each round 
+\begin_inset Formula $b=1,2,3,...,B$
 \end_inset
 
- into 
-\begin_inset Formula $\{x_{i}^{b},y_{i}^{b}\}_{i=1}^{N}:b=1,2,3,...,B$
+, where 
+\begin_inset Formula $B=\text{n\_base\_learner}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Take the training sample 
+\begin_inset Formula $\{x_{i}^{b},y_{i}^{b}\}_{i=1}^{N}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+When 
+\begin_inset Formula $b=1$
+\end_inset
+
+, it's the original sample
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+When 
+\begin_inset Formula $b\geq1$
+\end_inset
+
+, it's a weighted sample (defined below)
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Fit a base learner 
+\begin_inset Formula $f_{b}$
+\end_inset
+
+: a decision tree (of max_depth = 1)
+\end_layout
+
+\begin_layout Enumerate
+Check the performance of the base learner 
+\begin_inset Formula $f_{b}$
 \end_inset
 
 
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
-where 
-\begin_inset Formula $B$
+\begin_layout Enumerate
+Make predictions using 
+\begin_inset Formula $f_{b}$
 \end_inset
 
- is n_base_learner
+ on the training set 
+\begin_inset Formula $\{x_{i}^{b},y_{i}^{b}\}_{i=1}^{N}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the overall performance of base learner 
+\begin_inset Formula $f_{b}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\text{error rate}_{b}=\frac{\#\{i:f_{b}(x_{i}^{b})\neq y_{i}\}}{N}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\text{amount of say}_{b}=\ln\frac{1-\text{error rate}_{b}}{\text{error rate}_{b}}+\ln(K-1)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Calculate the sample weight for the next round:
+\begin_inset Formula 
+\[
+w_{i}=\frac{1}{N}\times e^{1(y_{i}^{b}\neq f_{b}(x_{i}^{b})\times\text{amount of say}_{b}}
+\]
+
+\end_inset
+
+Basically, if 
+\begin_inset Formula $f_{b}$
+\end_inset
+
+ makes a correct prediction on 
+\begin_inset Formula $i$
+\end_inset
+
+, then 
+\begin_inset Formula $w_{i}=\frac{1}{N}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $f_{b}$
+\end_inset
+
+ makes a wrong prediction on 
+\begin_inset Formula $i$
+\end_inset
+
+, then we jack up the weight of 
+\begin_inset Formula $w_{i}>\frac{1}{N}$
+\end_inset
+
+.
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
-s
+\begin_layout Enumerate
+We update the next-round dataset using repeated sampling from 
+\begin_inset Formula $\{x_{i},y_{i}\}_{i=1}^{N}$
+\end_inset
+
+ using weights 
+\begin_inset Formula $\{w_{i}\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Finally, predictions will be based on all base_learners 
+\begin_inset Formula $f_{b}$
+\end_inset
+
+ of each round, weighted by 
+\begin_inset Formula $\text{amount of say}_{b}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Intuitively, this process iteratively increases the weight of observations
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ with wrong predictions.
+ 
 \end_layout
 
 \end_body
