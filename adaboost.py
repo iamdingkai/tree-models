@@ -50,15 +50,46 @@ class AdaBoostClassifer():
         return sample_weights
     
     def fit(self, X_train: np.array, y_train: np.array) -> None:
-        pass
+        
+        self.X_train = X_train
+        self.y_train = y_train
+
+        # for the first round, no weighting
+        X_bootstrapped = X_train
+        y_boostrapped = y_train
+        self.label_count = len(np.unique(y_train))
+
+        self.base_learner_list = []
+        for i in range(len(self.n_base_learner)):
+            base_learner = self._fit_base_learner(X_bootstrapped, y_boostrapped)
+            self.base_learner_list.append(base_learner)
+            sample_weights = self._calcualte_sample_weights(base_learner) # sample_weights used for next round
+            X_bootstrapped, y_bootstrapped = self._update_dataset(sample_weights)
+        
+        return
+    
 
     def _predict_scores_with_base_learner(self, X: np.array) -> list:
-        pass
+        
+        pred_scores = np.zeros(shape=(self.n_base_learner, X.shape[0], self.label_count))
+        for idx, base_learner in enumerate(self.base_learner_list):
+            pred_probs = base_learner.predict_proba(X)
+            pred_scores[idx] = pred_probs * base_learner.amount_of_say
+        return pred_scores
 
     def predict_proba(self, X: np.array) -> np.array:
-        pass
+        pred_probs = []
+        base_learner_pred_scores = self._predict_scores_with_base_learner(X)
+
+        avg_base_learners_pred_scores = np.mean(base_learner_pred_scores, axis=0)
+        column_sums = np.sum(avg_base_learners_pred_scores, axis=1)
+        pred_probs = avg_base_learners_pred_scores / column_sums[:, np.newaxis] # normalize so it adds up as probabilities
+
+        return pred_probs
 
     def predict(self, X: np.array) -> np.array:
-        pass
+        
+        pred_probs = self.predict_proba(X)
+        preds = np.argmax(pred_probs, axis=1)
 
-    def 
+        return preds
