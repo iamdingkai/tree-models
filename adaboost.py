@@ -47,6 +47,10 @@ class AdaBoostClassifer():
         matches = (preds == self.y_train)
         not_matches = (~matches).astype(int)
         sample_weights = 1 / self.X_train.shape[0] * np.exp(base_learner.amount_of_say * not_matches)
+
+        # normalize sample_weights
+        sample_weights = sample_weights / np.sum(sample_weights)
+
         return sample_weights
     
     def fit(self, X_train: np.array, y_train: np.array) -> None:
@@ -56,14 +60,14 @@ class AdaBoostClassifer():
 
         # for the first round, no weighting
         X_bootstrapped = X_train
-        y_boostrapped = y_train
+        y_bootstrapped = y_train
         self.label_count = len(np.unique(y_train))
 
         self.base_learner_list = []
-        for i in range(len(self.n_base_learner)):
-            base_learner = self._fit_base_learner(X_bootstrapped, y_boostrapped)
+        for i in range(self.n_base_learner):
+            base_learner = self._fit_base_learner(X_bootstrapped, y_bootstrapped)
             self.base_learner_list.append(base_learner)
-            sample_weights = self._calcualte_sample_weights(base_learner) # sample_weights used for next round
+            sample_weights = self._calculate_sample_weights(base_learner) # sample_weights used for next round
             X_bootstrapped, y_bootstrapped = self._update_dataset(sample_weights)
         
         return
